@@ -19,34 +19,39 @@ class LocationController extends ChangeNotifier {
 
   LocationModel? get currentLocation => _currentLocation;
 
-  void _listenToLocations() {
-    log("Listening to locations");
-    locationRepository.locations.listen(
-      // Alles supi, Locations kommen raus und an.
-      (Position locationData) {
-        log("Got location data: $locationData");
-        _currentLocation = LocationModel(
-          latitude: locationData.latitude,
-          //latitude: 0.0,
-          longitude: locationData.longitude,
-          //longitude: 0.0,
-        );
-        notifyListeners();
-      },
-      // Gab nen Fehler, das wollen wir weitergeben.
-      onError: (error, stacktrace) {
-        log("Error when getting location data.");
-        log(error.toString());
-        log(stacktrace.toString());
-        hasErrorOcurred = true;
-        notifyListeners();
-      },
-      onDone: () {
-        log("Done with getting locations");
-        notifyListeners();
-      },
-      // Wenn es Fehler gab, alles abbrechen und Ende.
-      cancelOnError: true,
-    );
+  void _listenToLocations() async {
+    if (await locationRepository.isPermissionEnabled()) {
+      log("Listening to locations");
+      locationRepository.locations.listen(
+        // Alles supi, Locations kommen raus und an.
+        (Position locationData) {
+          log("Got location data: $locationData");
+          _currentLocation = LocationModel(
+            latitude: locationData.latitude,
+            //latitude: 0.0,
+            longitude: locationData.longitude,
+            //longitude: 0.0,
+          );
+          notifyListeners();
+        },
+        // Gab nen Fehler, das wollen wir weitergeben.
+        onError: (error, stacktrace) {
+          log("Error when getting location data.");
+          log(error.toString());
+          log(stacktrace.toString());
+          hasErrorOcurred = true;
+          notifyListeners();
+        },
+        onDone: () {
+          log("Done with getting locations");
+          notifyListeners();
+        },
+        // Wenn es Fehler gab, alles abbrechen und Ende.
+        cancelOnError: true,
+      );
+    } else {
+      await locationRepository.getPermissions();
+      notifyListeners();
+    }
   }
 }
