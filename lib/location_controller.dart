@@ -21,24 +21,20 @@ class LocationController extends ChangeNotifier {
 
   void _listenToLocations() async {
     if (await locationRepository.isPermissionEnabled()) {
-      log("Listening to locations");
       locationRepository.locations.listen(
         // Alles supi, Locations kommen raus und an.
         (location) {
-          log("Got location data: $location");
           _currentLocation = location;
           notifyListeners();
         },
         // Gab nen Fehler, das wollen wir weitergeben.
         onError: (error, stacktrace) {
-          log("Error when getting location data.");
           log(error.toString());
           log(stacktrace.toString());
           hasErrorOcurred = true;
           notifyListeners();
         },
         onDone: () {
-          log("Done with getting locations");
           notifyListeners();
         },
         // Wenn es Fehler gab, alles abbrechen und Ende.

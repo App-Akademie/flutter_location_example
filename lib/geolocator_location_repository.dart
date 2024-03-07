@@ -2,7 +2,7 @@ import 'package:flutter_location_example/location_model.dart';
 import 'package:flutter_location_example/location_repository.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// LocationRepository implementation mit dem `geolocator` package.
+/// LocationRepository implementation mit dem `geolocator` Package.
 class GeolocatorLocationRepository extends LocationRepository {
   @override
   Future<bool> isPermissionEnabled() async {
@@ -16,31 +16,34 @@ class GeolocatorLocationRepository extends LocationRepository {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
+    // Checken, ob der Service aktiviert und verfügbar ist.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
+      // Der Location Service ist nicht aktiviert, wir können
+      // nicht fortfahren und die Position abfragen. Wir
+      // fordern die Benutzer der App auf, den Location Service
+      // zu aktivieren.
+      throw Exception('Location service is disabled.');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+        // Permissions wurden verweigert, das nächste Mal
+        // kann man versuchen, die Berechtigungen erneut
+        // anzufordern (hier wird auch true zurückgegeben,
+        // wenn shouldShowRequestPermissionRationale von
+        // Android true zurückgibt. Laut Android-Richtlinien
+        // sollte die App jetzt eine erläuternde UI anzeigen.
+        throw Exception('Location permissions are denied.');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
+      // Berechtigungen wurden dauerhaft verweigert, es kann
+      // keine Berechtigungen mehr angefordert werden.
+      throw Exception(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
@@ -50,8 +53,4 @@ class GeolocatorLocationRepository extends LocationRepository {
   @override
   Stream<LocationModel> get locations => Geolocator.getPositionStream()
       .map((p) => LocationModel(latitude: p.latitude, longitude: p.longitude));
-  // /// Will return Stuttgart :) 48.783333, 9.183333
-  // Stream<LocationModel> get locations => Stream.value(
-  //       LocationModel(latitude: 48.783333, longitude: 9.183333),
-  //     );
 }
