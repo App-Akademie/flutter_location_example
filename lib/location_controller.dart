@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_location_example/geolocator_location_repository.dart';
 import 'package:flutter_location_example/location_model.dart';
 import 'package:flutter_location_example/location_repository.dart';
-import 'package:geolocator/geolocator.dart';
 
 class LocationController extends ChangeNotifier {
   LocationController() {
@@ -11,7 +11,7 @@ class LocationController extends ChangeNotifier {
     _listenToLocations();
   }
 
-  final LocationRepository locationRepository = LocationRepository();
+  final LocationRepository locationRepository = GeolocatorLocationRepository();
 
   bool hasErrorOcurred = false;
 
@@ -24,14 +24,9 @@ class LocationController extends ChangeNotifier {
       log("Listening to locations");
       locationRepository.locations.listen(
         // Alles supi, Locations kommen raus und an.
-        (Position locationData) {
-          log("Got location data: $locationData");
-          _currentLocation = LocationModel(
-            latitude: locationData.latitude,
-            //latitude: 0.0,
-            longitude: locationData.longitude,
-            //longitude: 0.0,
-          );
+        (location) {
+          log("Got location data: $location");
+          _currentLocation = location;
           notifyListeners();
         },
         // Gab nen Fehler, das wollen wir weitergeben.
