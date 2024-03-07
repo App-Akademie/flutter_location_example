@@ -2,6 +2,7 @@ import 'package:flutter_location_example/location_model.dart';
 import 'package:flutter_location_example/location_repository.dart';
 import 'package:geolocator/geolocator.dart';
 
+/// LocationRepository implementation mit dem `geolocator` package.
 class GeolocatorLocationRepository extends LocationRepository {
   @override
   Future<bool> isPermissionEnabled() async {
