@@ -1,5 +1,11 @@
 import 'package:flutter_location_example/location_model.dart';
 
+/// Abstrakte Klasse, die die Methoden für den Zugriff auf den Standort
+/// definiert.
+///
+/// Man kann abfragen, ob die Berechtigung für den Zugriff auf den Standort
+/// erteilt wurde, die Berechtigung anfordern und die aktuellen Standortdaten
+/// abfragen.
 abstract class LocationRepository {
   /// Überprüfen, ob die Berechtigung für den Zugriff auf den Standort
   /// erteilt wurde.

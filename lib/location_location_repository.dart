@@ -2,7 +2,7 @@ import 'package:flutter_location_example/location_model.dart';
 import 'package:flutter_location_example/location_repository.dart';
 import 'package:location/location.dart';
 
-/// LocationRepository implementation mit dem `location` Package.
+/// LocationRepository Implementierung mit dem `location` Package.
 class LocationLocationRepository extends LocationRepository {
   final Location _location = Location();
 
