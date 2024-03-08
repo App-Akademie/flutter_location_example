@@ -13,36 +13,71 @@ class LocationController extends ChangeNotifier {
 
   final LocationRepository locationRepository = GeolocatorLocationRepository();
 
-  bool hasErrorOcurred = false;
+  LocationStatus status = LocationStatus.loading;
 
   LocationModel? _currentLocation;
 
+  /// Property, das den aktuellen Standort anzeigt (read only).
   LocationModel? get currentLocation => _currentLocation;
 
   void _listenToLocations() async {
-    if (await locationRepository.isPermissionEnabled()) {
-      locationRepository.locations.listen(
-        // Alles supi, Locations kommen raus und an.
-        (location) {
-          _currentLocation = location;
-          notifyListeners();
-        },
-        // Gab nen Fehler, das wollen wir weitergeben.
-        onError: (error, stacktrace) {
-          log(error.toString());
-          log(stacktrace.toString());
-          hasErrorOcurred = true;
-          notifyListeners();
-        },
-        onDone: () {
-          notifyListeners();
-        },
-        // Wenn es Fehler gab, alles abbrechen und Ende.
-        cancelOnError: true,
-      );
-    } else {
-      await locationRepository.getPermissions();
-      notifyListeners();
+    // Checken, ob wir die Berechtigung haben und evtl. anfordern.
+    bool isPermissionEnabled = await locationRepository.isPermissionEnabled();
+    if (!isPermissionEnabled) {
+      // Berechtigungen anfordern
+
+      isPermissionEnabled = await locationRepository.getPermissions();
     }
+
+    // Wenn der Benutzer immer noch keine Berechtigung gegeben hat,
+    // dann können wir nicht weitermachen.
+    if (!isPermissionEnabled) {
+      status = LocationStatus.permissionDenied;
+      notifyListeners();
+
+      return;
+    }
+
+    // Wenn wir die Berechtigung haben, kann der Standort abonniert werden.
+    locationRepository.locations.listen(
+      // Alles supi, Locations kommen raus und an.
+      (location) {
+        _currentLocation = location;
+        status = LocationStatus.active;
+        notifyListeners();
+      },
+      // Gab nen Fehler. Das muss irgendwie weiter kommuniziert werden.
+      onError: (error, stacktrace) {
+        log(error.toString());
+        log(stacktrace.toString());
+        // TODO set right status depending on error
+        status = LocationStatus.permissionDenied;
+        notifyListeners();
+      },
+      onDone: () {
+        notifyListeners();
+      },
+      // Wenn es Fehler gab, alles abbrechen und Ende.
+      cancelOnError: true,
+    );
   }
+}
+
+/// In welchem Zustand ist der Location Access gerade?
+enum LocationStatus {
+  /// Wird aktuell geladen (initialer Zustand).
+  loading,
+
+  /// Alles gut, wir haben die Berechtigungen.
+  active,
+
+  /// Wir brauchen noch Berechtigungen.
+  permissionRequired,
+
+  /// Wir haben die Berechtigungen nicht bekommen.
+  permissionDenied,
+
+  /// Wir haben die Berechtigungen nicht bekommen und der Nutzer hat gesagt,
+  /// dass er sie nie geben wird.
+  permissionDeniedForever,
 }

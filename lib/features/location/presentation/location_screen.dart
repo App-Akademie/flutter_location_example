@@ -15,14 +15,29 @@ class LocationScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Current Position:'),
-            if (!locationController.hasErrorOcurred &&
-                locationController.currentLocation == null)
-              const CircularProgressIndicator(),
-            if (locationController.hasErrorOcurred) const Text("Feeeehler!!!"),
-            if (locationController.currentLocation != null)
-              Text(
-                "${locationController.currentLocation?.latitude}, ${locationController.currentLocation?.longitude}",
-              ),
+            switch (locationController.status) {
+              LocationStatus.loading => const CircularProgressIndicator(),
+              LocationStatus.permissionRequired =>
+                const Text("Permission required"),
+              LocationStatus.permissionDenied ||
+              LocationStatus.permissionDeniedForever =>
+                const Text("Keine Permission"),
+              LocationStatus.active => Text(
+                  "${locationController.currentLocation?.latitude}, ${locationController.currentLocation?.longitude}",
+                ),
+            },
+            // if (locationController.status == LocationStatus.loading)
+            //   const CircularProgressIndicator(),
+            // if (locationController.status == LocationStatus.permissionRequired)
+            //   const Text("Permission required"),
+            // if (locationController.status == LocationStatus.permissionDenied ||
+            //     locationController.status ==
+            //         LocationStatus.permissionDeniedForever)
+            //   const Text("Keine Permission"),
+            // if (locationController.status == LocationStatus.active)
+            //   Text(
+            //     "${locationController.currentLocation?.latitude}, ${locationController.currentLocation?.longitude}",
+            //   ),
           ],
         ),
       ),

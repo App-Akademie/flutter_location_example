@@ -18,6 +18,7 @@ In an ideal world for the app developer, location would always be accessible.
 However, the user has the right to deny access to their location, and the app must handle this gracefully.
 
 There are several cases to consider:
+
 - Location access is already granted
 - The user is currently asked for permission
 - The user has denied access to their location
