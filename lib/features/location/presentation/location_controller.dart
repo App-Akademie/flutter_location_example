@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_location_example/geolocator_location_repository.dart';
-import 'package:flutter_location_example/location_model.dart';
-import 'package:flutter_location_example/location_repository.dart';
+import 'package:flutter_location_example/features/location/data/geolocator_location_repository.dart';
+import 'package:flutter_location_example/features/location/data/location_repository.dart';
+import 'package:flutter_location_example/features/location/domain/location_model.dart';
 
 class LocationController extends ChangeNotifier {
   LocationController() {

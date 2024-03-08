@@ -1,5 +1,5 @@
-import 'package:flutter_location_example/location_model.dart';
-import 'package:flutter_location_example/location_repository.dart';
+import 'package:flutter_location_example/features/location/data/location_repository.dart';
+import 'package:flutter_location_example/features/location/domain/location_model.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// LocationRepository Implementierung mit dem `geolocator` Package.

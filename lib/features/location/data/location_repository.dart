@@ -1,4 +1,4 @@
-import 'package:flutter_location_example/location_model.dart';
+import 'package:flutter_location_example/features/location/domain/location_model.dart';
 
 /// Abstrakte Klasse, die die Methoden für den Zugriff auf den Standort
 /// definiert.
