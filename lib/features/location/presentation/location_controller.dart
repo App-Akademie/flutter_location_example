@@ -34,6 +34,7 @@ class LocationController extends ChangeNotifier {
 
         isPermissionEnabled = await locationRepository.getPermissions();
       } on ServiceDisabledException {
+        // Hier könnte auch ein eigener Status verwendet werden.
         status = LocationStatus.permissionDenied;
         notifyListeners();
 
@@ -63,17 +64,6 @@ class LocationController extends ChangeNotifier {
       (location) {
         _currentLocation = location;
         status = LocationStatus.active;
-        notifyListeners();
-      },
-      // Gab nen Fehler. Das muss irgendwie weiter kommuniziert werden.
-      onError: (error, stacktrace) {
-        log(error.toString());
-        log(stacktrace.toString());
-        // TODO: Set right status depending on error.
-        status = LocationStatus.permissionDenied;
-        notifyListeners();
-      },
-      onDone: () {
         notifyListeners();
       },
     );
