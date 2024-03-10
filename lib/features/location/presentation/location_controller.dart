@@ -23,19 +23,38 @@ class LocationController extends ChangeNotifier {
   void _listenToLocations() async {
     // Checken, ob wir die Berechtigung haben und evtl. anfordern.
     bool isPermissionEnabled = await locationRepository.isPermissionEnabled();
+    // Berechtigungen anfordern falls nötig.
     if (!isPermissionEnabled) {
-      // Berechtigungen anfordern
+      // Hierbei müssen die verschiedenen Exceptions abgefangen werden.
+      // Je nach Exception muss der Status gesetzt werden, damit die UI
+      // entsprechend anzeigen kann, was los ist.
+      try {
+        status = LocationStatus.permissionRequired;
+        notifyListeners();
 
-      isPermissionEnabled = await locationRepository.getPermissions();
-    }
+        isPermissionEnabled = await locationRepository.getPermissions();
+      } on ServiceDisabledException {
+        status = LocationStatus.permissionDenied;
+        notifyListeners();
 
-    // Wenn der Benutzer immer noch keine Berechtigung gegeben hat,
-    // dann können wir nicht weitermachen.
-    if (!isPermissionEnabled) {
-      status = LocationStatus.permissionDenied;
-      notifyListeners();
+        return;
+      } on PermissionDeniedOnceException {
+        status = LocationStatus.permissionDenied;
+        notifyListeners();
 
-      return;
+        return;
+      } on PermissionDeniedForeverException {
+        status = LocationStatus.permissionDeniedForever;
+        notifyListeners();
+
+        return;
+      } on Exception catch (e) {
+        log(e.toString());
+        status = LocationStatus.permissionDenied;
+        notifyListeners();
+
+        return;
+      }
     }
 
     // Wenn wir die Berechtigung haben, kann der Standort abonniert werden.
@@ -50,15 +69,13 @@ class LocationController extends ChangeNotifier {
       onError: (error, stacktrace) {
         log(error.toString());
         log(stacktrace.toString());
-        // TODO set right status depending on error
+        // TODO: Set right status depending on error.
         status = LocationStatus.permissionDenied;
         notifyListeners();
       },
       onDone: () {
         notifyListeners();
       },
-      // Wenn es Fehler gab, alles abbrechen und Ende.
-      cancelOnError: true,
     );
   }
 }

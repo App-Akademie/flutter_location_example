@@ -28,7 +28,7 @@ class LocationLocationRepository extends LocationRepository {
         // nicht fortfahren und die Position abfragen. Wir
         // fordern die Benutzer der App auf, den Location Service
         // zu aktivieren.
-        throw Exception('Location service is disabled.');
+        throw ServiceDisabledException();
       }
     }
 
@@ -42,15 +42,14 @@ class LocationLocationRepository extends LocationRepository {
         // wenn shouldShowRequestPermissionRationale von
         // Android true zurückgibt. Laut Android-Richtlinien
         // sollte die App jetzt eine erläuternde UI anzeigen.
-        throw Exception('Location permissions are denied.');
+        throw PermissionDeniedOnceException();
       }
     }
 
     if (permission == PermissionStatus.deniedForever) {
       // Berechtigungen wurden dauerhaft verweigert, es kann
       // keine Berechtigungen mehr angefordert werden.
-      throw Exception(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      throw PermissionDeniedForeverException();
     }
     return true;
   }

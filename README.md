@@ -32,10 +32,15 @@ Usually, the user is asked for permission when the app is first started, eg. dur
 However, the user can also change their mind and revoke access to their location at any time.
 Therefore, the app should check for permission every time it needs to access the location and ask for permission if necessary.
 
+### Android vs. iOS
+
+There are some differences between the possible state of location permission on Android and iOS.
+On Android, the user cannot deny the permission forever, but only until the app is closed.
+On iOS, the user can deny the permission forever, which seems to be the default "deny" option.
+
 ## Using the `location` / `geolocator` packages
 
 The `location` and `geolocator` packages are very similar, and can almost be used interchangeably.
-
 
 However, the `geolocator` package is a bit more feature-rich, has more upvotes and seems to be maintained more actively.
 There also was a problem with the `location` package (see below).
