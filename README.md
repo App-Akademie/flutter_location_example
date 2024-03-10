@@ -10,7 +10,7 @@ The app demonstrates two different ways to get the current location:
 - Using the [`location`](https://pub.dev/packages/location) package
 - Using the [`geolocator`](https://pub.dev/packages/geolocator) package
 
-Each package has it's own repository, which can be swapped out.
+Each package has its own `repository`, which can be swapped out.
 
 ## Location permission states
 
